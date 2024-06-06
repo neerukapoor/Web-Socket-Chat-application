@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { WebSocket } from "ws";
 import z from "zod";
 import jwt from "jsonwebtoken"
+import uniqid from 'uniqid';
 import { User } from "../db/auth"
 require('dotenv').config();
 
@@ -15,7 +16,8 @@ interface User {
 interface userSchema {
     email: string,
     username: string,
-    password: string
+    password: string,
+    webSocket: WebSocket
 }
 
 const inputSyntax = z.object({
@@ -37,14 +39,19 @@ router.post("/signup", async (req, res) => {
             return res.status(500).json({message:"User with this email already present"})
         }
 
-        const emailAddressPrefix =  email.split('@');
-        const uniqueEmailAddress = emailAddressPrefix[0];
-
         const user = await new User<userSchema>({
             email,
-            username: uniqueEmailAddress,
+            username: uniqid(),
             password,
+            webSocket: new WebSocket("ws://localhost:8080")
         })
+
+        console.log("in db")
+
+        if (!(user.webSocket instanceof WebSocket)) {
+            return res.status(500).json({message:"websocket does not initialized properly"})
+        }
+
         await user.save().then(() => {
             console.log(`New user created successfully: ${user.email} `)
         }).catch((e) => {
@@ -72,7 +79,7 @@ router.post("/login", async(req, res) => {
         ) {
         return res
             .status(401)
-            .json({ error: 'Either Username or password is not correct ' })
+            .json({ error: 'Either email or password is not correct ' })
         }
         const jwtToken = signJWT(req)
         console.log(`User logged in successfully: ${existingUser.username}`)

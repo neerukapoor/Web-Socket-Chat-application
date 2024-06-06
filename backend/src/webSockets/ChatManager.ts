@@ -22,8 +22,9 @@ export class ChatManager {
         }
     }
 
-    startChat(user1 : WebSocket, user2 : WebSocket) {
-
+    startChat(user1 : WebSocket | null, user2 : WebSocket | null) {
+        if(!user1 || !user2) 
+            return;
         user1.on("message", (data) => {
             const user1message = JSON.parse(data.toString());
             user2.send(JSON.stringify({

@@ -19,6 +19,8 @@ class ChatManager {
         }
     }
     startChat(user1, user2) {
+        if (!user1 || !user2)
+            return;
         user1.on("message", (data) => {
             const user1message = JSON.parse(data.toString());
             user2.send(JSON.stringify({

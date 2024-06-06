@@ -16,6 +16,7 @@ exports.User = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const validator_1 = __importDefault(require("validator"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const ws_1 = require("ws");
 const userSchema = new mongoose_1.default.Schema({
     email: {
         type: String,
@@ -32,7 +33,8 @@ const userSchema = new mongoose_1.default.Schema({
     password: {
         type: String,
         required: [true, "Please provide password"],
-    }
+    },
+    webSocket: { type: ws_1.WebSocket }
 });
 userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {

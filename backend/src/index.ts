@@ -6,6 +6,7 @@ import cors from 'cors';
 import mongoose from 'mongoose'
 const PORT = 3000;
 import authRouter from './routes/auth';
+import chatRouter from './routes/chat'
 import * as dotenv from 'dotenv';
 dotenv.config();
 app.use(express.json());
@@ -30,6 +31,7 @@ if(process.env.MONGODB_URI) {
 }
 
 app.use("/auth", authRouter);
+app.use("/chat",chatRouter);
 
 app.listen(3000, () => {
     console.log(`Server listning on port ${PORT}`)

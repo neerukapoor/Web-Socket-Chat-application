@@ -7,7 +7,7 @@ interface IUser extends Document {
     email: string;
     username: string;
     password: string;
-    userToSocketMapping: Map<string, WebSocket>;
+    webSocket?: WebSocket;
     correctPassword(candidatePassword: string, userPassword: string): Promise<boolean>;
 }
 
@@ -28,11 +28,7 @@ const userSchema = new mongoose.Schema<IUser>({
         type: String,
         required: [true, "Please provide password"],
     },
-    userToSocketMapping: {
-        type: Map,
-        of: Schema.Types.Mixed,
-        default: new Map<string, WebSocket>()
-    }
+    webSocket: { type: Schema.Types.Mixed }
 })
 
 userSchema.pre('save', async function (next) {

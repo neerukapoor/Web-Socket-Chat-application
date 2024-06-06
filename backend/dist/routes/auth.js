@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const ws_1 = require("ws");
 const zod_1 = __importDefault(require("zod"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const uniqid_1 = __importDefault(require("uniqid"));
 const auth_1 = require("../db/auth");
 require('dotenv').config();
 const router = express_1.default.Router();
@@ -32,13 +34,16 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (isUserAlreadyPresent) {
             return res.status(500).json({ message: "User with this email already present" });
         }
-        const emailAddressPrefix = email.split('@');
-        const uniqueEmailAddress = emailAddressPrefix[0];
         const user = yield new auth_1.User({
             email,
-            username: uniqueEmailAddress,
+            username: (0, uniqid_1.default)(),
             password,
+            webSocket: new ws_1.WebSocket("ws://localhost:8080")
         });
+        console.log("in db");
+        if (!(user.webSocket instanceof ws_1.WebSocket)) {
+            return res.status(500).json({ message: "websocket does not initialized properly" });
+        }
         yield user.save().then(() => {
             console.log(`New user created successfully: ${user.email} `);
         }).catch((e) => {
@@ -63,7 +68,7 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             !existingUser.correctPassword(password, existingUser.password)) {
             return res
                 .status(401)
-                .json({ error: 'Either Username or password is not correct ' });
+                .json({ error: 'Either email or password is not correct ' });
         }
         const jwtToken = signJWT(req);
         console.log(`User logged in successfully: ${existingUser.username}`);
