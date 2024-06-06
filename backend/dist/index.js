@@ -26,6 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const ws_1 = require("ws");
+const ChatManager_1 = require("./webSockets/ChatManager");
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const cors_1 = __importDefault(require("cors"));
@@ -36,14 +38,13 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-// pick this part later
-// const wss = new WebSocketServer({ port: 8080 });
-// const chatManager = new ChatManager();
-// wss.on('connection', function connection(ws) {
-//     ws.on('error', console.error);
-//     chatManager.addUser(ws);
-//     ws.on("disconnect", () => {chatManager.removeUser(ws)})
-// });
+const wss = new ws_1.WebSocketServer({ port: 8080 });
+const chatManager = new ChatManager_1.ChatManager();
+wss.on('connection', function connection(ws) {
+    ws.on('error', console.error);
+    chatManager.addUser(ws);
+    ws.on("disconnect", () => { chatManager.removeUser(ws); });
+});
 if (process.env.MONGODB_URI) {
     mongoose_1.default.connect(process.env.MONGODB_URI).then(() => {
         console.log("Connected to MongoDB");

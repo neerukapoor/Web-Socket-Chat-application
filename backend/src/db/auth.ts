@@ -1,11 +1,13 @@
-import mongoose, { Document, Model } from 'mongoose'
+import mongoose, { Document, Schema } from 'mongoose'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
+import { WebSocket } from "ws";
 
 interface IUser extends Document {
     email: string;
     username: string;
     password: string;
+    userToSocketMapping: Map<string, WebSocket>;
     correctPassword(candidatePassword: string, userPassword: string): Promise<boolean>;
 }
 
@@ -25,6 +27,11 @@ const userSchema = new mongoose.Schema<IUser>({
     password: {
         type: String,
         required: [true, "Please provide password"],
+    },
+    userToSocketMapping: {
+        type: Map,
+        of: Schema.Types.Mixed,
+        default: new Map<string, WebSocket>()
     }
 })
 

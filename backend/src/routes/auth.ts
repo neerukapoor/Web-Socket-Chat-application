@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { WebSocket } from "ws";
 import z from "zod";
 import jwt from "jsonwebtoken"
 import { User } from "../db/auth"

@@ -1,29 +1,24 @@
-import { WebSocket } from "ws";
-
-export class ChatManager {
-    private users: WebSocket[];
-    private pendingUser: WebSocket | null;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChatManager = void 0;
+class ChatManager {
     constructor() {
         this.users = [];
         this.pendingUser = null;
     }
-
-    addUser(socket: WebSocket) {
+    addUser(socket) {
         this.users.push(socket);
         this.handler(socket);
     }
-
-    handler(socket: WebSocket) {   
-        if(this.pendingUser) {
-            this.startChat(socket, this.pendingUser)
+    handler(socket) {
+        if (this.pendingUser) {
+            this.startChat(socket, this.pendingUser);
         }
         else {
             this.pendingUser = socket;
         }
     }
-
-    startChat(user1 : WebSocket, user2 : WebSocket) {
-
+    startChat(user1, user2) {
         console.log("yaha");
         user1.on("message", (data) => {
             const user1message = JSON.parse(data.toString());
@@ -31,21 +26,20 @@ export class ChatManager {
             console.log("yaha inner");
             user2.send(JSON.stringify({
                 message: user1message.message
-            }))
-        })
-        console.log("idhar")
+            }));
+        });
+        console.log("idhar");
         user2.on("message", (data) => {
             const user2message = JSON.parse(data.toString());
             console.log(user2message);
-            console.log("idhar inner")
+            console.log("idhar inner");
             user1.send(JSON.stringify({
                 message: user2message.message
-            }))
-        })
-        console.log("aslkdhf")
+            }));
+        });
+        console.log("aslkdhf");
     }
-
-    removeUser(socket: WebSocket) {
-
+    removeUser(socket) {
     }
 }
+exports.ChatManager = ChatManager;

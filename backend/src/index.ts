@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import { ChatManager } from './ChatManager';
+import { ChatManager } from './webSockets/ChatManager';
 import express from 'express';
 const app = express();
 import cors from 'cors';
@@ -11,18 +11,15 @@ dotenv.config();
 app.use(express.json());
 app.use(cors());
 
+const wss = new WebSocketServer({ port: 8080 });
+const chatManager = new ChatManager();
 
-// pick this part later
-// const wss = new WebSocketServer({ port: 8080 });
+wss.on('connection', function connection(ws) {
+    ws.on('error', console.error);
+    chatManager.addUser(ws);
 
-// const chatManager = new ChatManager();
-
-// wss.on('connection', function connection(ws) {
-//     ws.on('error', console.error);
-//     chatManager.addUser(ws);
-
-//     ws.on("disconnect", () => {chatManager.removeUser(ws)})
-// });
+    ws.on("disconnect", () => {chatManager.removeUser(ws)})
+});
 
 if(process.env.MONGODB_URI) {
     mongoose.connect(process.env.MONGODB_URI).then(() => {
