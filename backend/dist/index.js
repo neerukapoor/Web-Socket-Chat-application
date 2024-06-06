@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const cors_1 = __importDefault(require("cors"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const PORT = 3000;
 const auth_1 = __importDefault(require("./routes/auth"));
 const dotenv = __importStar(require("dotenv"));
@@ -43,6 +44,13 @@ app.use((0, cors_1.default)());
 //     chatManager.addUser(ws);
 //     ws.on("disconnect", () => {chatManager.removeUser(ws)})
 // });
+if (process.env.MONGODB_URI) {
+    mongoose_1.default.connect(process.env.MONGODB_URI).then(() => {
+        console.log("Connected to MongoDB");
+    }).catch((e) => {
+        console.log(`Error connecting to MongoDB: ${e}`);
+    });
+}
 app.use("/auth", auth_1.default);
 app.listen(3000, () => {
     console.log(`Server listning on port ${PORT}`);
