@@ -40,6 +40,7 @@ router.post("/landing", (req, res) => __awaiter(void 0, void 0, void 0, function
     if (!anotherUser.webSocket) {
         return res.status(500).json({ message: "WebSocket not available for the user." });
     }
+    // start work from here 
     // Check if anotherUser.webSocket is a WebSocket object
     if (!(anotherUser.webSocket instanceof ws_1.WebSocket)) {
         return res.status(500).json({ message: "WebSocket is not properly initialized." });
