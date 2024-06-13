@@ -12,16 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const zod_1 = __importDefault(require("zod"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const auth_1 = require("../db/auth");
+const auth_1 = require("../models/auth");
 require('dotenv').config();
-const router = express_1.default.Router();
 const signupInputSyntax = zod_1.default.object({
     email: zod_1.default.string().min(1).max(50),
     username: zod_1.default.string().min(3).max(30),
-    password: zod_1.default.string().min(5).max(30)
+    password: zod_1.default.string().min(5).max(30),
+    gender: zod_1.default.enum(['female', 'male'])
 });
 const loginInputSyntax = zod_1.default.object({
     username: zod_1.default.string().min(3).max(30),
@@ -34,6 +33,7 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const email = input.email;
         const username = input.username;
         const password = input.password;
+        const gender = input.gender;
         const isUserAlreadyPresent = yield auth_1.User.findOne({ email });
         if (isUserAlreadyPresent) {
             return res.status(500).json({ message: "User with this email already present" });
@@ -42,17 +42,25 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (isUsernameAlreadyPresent) {
             return res.status(500).json({ message: "Username already taken, please provide another username" });
         }
+        const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
+        const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
         const user = yield new auth_1.User({
             email,
             username: username,
-            password
+            password,
+            gender,
+            profilePic: gender === "male" ? boyProfilePic : girlProfilePic
         });
         yield user.save().then(() => {
             console.log(`New user created successfully: ${user.email} `);
         }).catch((e) => {
             return res.status(500).json({ message: `${e}` });
         });
-        const jwtToken = signJWT(req);
+        const id = user._id;
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined in environment variables');
+        }
+        const jwtToken = jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ message: "Signup Successfull", jwtToken });
     }
     catch (e) {
@@ -73,7 +81,11 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .status(401)
                 .json({ error: 'Either email or password is not correct ' });
         }
-        const jwtToken = signJWT(req);
+        const id = existingUser._id;
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined in environment variables');
+        }
+        const jwtToken = jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         console.log(`User logged in successfully: ${existingUser.username}`);
         res.status(200).json({ message: "Login Successfull", jwtToken });
     }
@@ -93,17 +105,6 @@ function checkLoginInputSyntax(req, res) {
     if (!parsedInput.success) {
         return res.status(411).json({ msg: parsedInput.error });
     }
-}
-function signJWT(req) {
-    const user = {
-        email: req.body.email,
-        password: req.body.password
-    };
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined in environment variables');
-    }
-    const jwtToken = jsonwebtoken_1.default.sign({ user }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return jwtToken;
 }
 exports.default = {
     signup,

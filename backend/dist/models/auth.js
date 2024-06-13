@@ -32,8 +32,15 @@ const userSchema = new mongoose_1.default.Schema({
     password: {
         type: String,
         required: [true, "Please provide password"],
+    },
+    gender: {
+        type: String,
+        required: [true, "Please provide your gender"]
+    },
+    profilePic: {
+        type: String
     }
-});
+}, { timestamps: true });
 userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!this.isModified('password'))

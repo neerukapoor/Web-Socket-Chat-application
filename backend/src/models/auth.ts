@@ -1,13 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
-import { WebSocket } from "ws";
 
 interface IUser extends Document {
     email: string;
     username: string;
     password: string;
     correctPassword(candidatePassword: string, userPassword: string): Promise<boolean>;
+    gender: string;
+    profilePic: string
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -26,8 +27,15 @@ const userSchema = new mongoose.Schema<IUser>({
     password: {
         type: String,
         required: [true, "Please provide password"],
+    },
+    gender: {
+        type: String,
+        required: [true, "Please provide your gender"]
+    },
+    profilePic: {
+        type: String
     }
-})
+}, {timestamps: true})
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();

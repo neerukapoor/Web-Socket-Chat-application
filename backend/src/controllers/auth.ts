@@ -1,24 +1,22 @@
 import express, { Request, Response } from "express";
-import { WebSocket } from "ws";
 import z from "zod";
 import jwt from "jsonwebtoken"
-import uniqid from 'uniqid';
-import { User } from "../db/auth"
-import { sign } from "crypto";
+import { User } from "../models/auth"
 require('dotenv').config();
-
-const router = express.Router();
 
 interface User {
     email: string,
     password: string
     username: string
+    gender: string
+    profilePic: string
 }
 
 const signupInputSyntax = z.object({
     email: z.string().min(1).max(50),
     username: z.string().min(3).max(30),
-    password: z.string().min(5).max(30)
+    password: z.string().min(5).max(30),
+    gender: z.enum(['female', 'male'])
 })
 
 const loginInputSyntax = z.object({
@@ -34,6 +32,7 @@ const signup = async (req: Request, res: Response) => {
         const email = input.email
         const username = input.username
         const password = input.password
+        const gender = input.gender
 
         const isUserAlreadyPresent = await User.findOne({email});
 
@@ -46,10 +45,15 @@ const signup = async (req: Request, res: Response) => {
             return res.status(500).json({ message: "Username already taken, please provide another username" });
         }
 
+        const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`
+        const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`
+
         const user = await new User<User>({
             email,
             username: username,
-            password
+            password,
+            gender,
+            profilePic: gender === "male" ? boyProfilePic : girlProfilePic
         })
 
         await user.save().then(() => {
@@ -57,7 +61,13 @@ const signup = async (req: Request, res: Response) => {
         }).catch((e) => {
             return res.status(500).json({message:`${e}`})
         });
-        const jwtToken = signJWT(req)
+
+        const id = user._id;
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined in environment variables');
+        }
+        const jwtToken = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+
         res.status(200).json({message: "Signup Successfull", jwtToken})
     } catch(e) {
         console.log(`Error while signing up ${e}`)
@@ -81,7 +91,11 @@ const login = async(req: Request, res: Response) => {
             .status(401)
             .json({ error: 'Either email or password is not correct ' })
         }
-        const jwtToken = signJWT(req)
+        const id = existingUser._id;
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined in environment variables');
+        }
+        const jwtToken = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1h'});
         console.log(`User logged in successfully: ${existingUser.username}`)
         res.status(200).json({message: "Login Successfull", jwtToken})
     } catch(e) {
@@ -102,18 +116,6 @@ function checkLoginInputSyntax(req : Request, res : Response) {
     if(!parsedInput.success) {
         return res.status(411).json({msg:parsedInput.error})
     }
-}
-
-function signJWT(req: Request) {
-    const user = {
-        email: req.body.email,
-        password: req.body.password
-    } 
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined in environment variables');
-    }
-    const jwtToken = jwt.sign({user}, process.env.JWT_SECRET, {expiresIn: '1h'});
-    return jwtToken
 }
 
 export default {
