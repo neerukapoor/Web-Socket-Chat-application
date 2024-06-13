@@ -43,12 +43,20 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const receiverId = req.params.id;
-    const senderId = req.headers["id"];
-    const conversation = yield conversation_1.Conversation.findOne({
-        participants: { $all: [senderId, receiverId] }
-    }).populate("messages");
-    res.status(200).json(conversation === null || conversation === void 0 ? void 0 : conversation.messages);
+    try {
+        const receiverId = req.params.id;
+        const senderId = req.headers["id"];
+        const conversation = yield conversation_1.Conversation.findOne({
+            participants: { $all: [senderId, receiverId] }
+        }).populate("messages");
+        if (!conversation) {
+            return res.status(200).json([]);
+        }
+        res.status(200).json(conversation === null || conversation === void 0 ? void 0 : conversation.messages);
+    }
+    catch (error) {
+        res.status(500).json({ error: `Error while reading messages: ${error}` });
+    }
 });
 exports.default = {
     sendMessage,

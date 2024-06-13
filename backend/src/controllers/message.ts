@@ -43,15 +43,21 @@ const sendMessage = async (req : Request , res: Response) => {
 }
 
 const getMessages = async (req : Request , res: Response) => {
-    const receiverId = req.params.id;
-    const senderId = req.headers["id"];
+    try {
+        const receiverId = req.params.id;
+        const senderId = req.headers["id"];
 
-    const conversation = await Conversation.findOne({
-        participants: {$all: [senderId, receiverId]}
-    }).populate("messages")
+        const conversation = await Conversation.findOne({
+            participants: {$all: [senderId, receiverId]}
+        }).populate("messages")
 
-    res.status(200).json(conversation?.messages)
-
+        if(!conversation) {
+            return res.status(200).json([])
+        }
+        res.status(200).json(conversation?.messages)
+    } catch (error) {
+        res.status(500).json({error: `Error while reading messages: ${error}`})
+    }
 }
 
 export default {

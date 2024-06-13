@@ -33,6 +33,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const PORT = 3000;
 const auth_1 = __importDefault(require("./routes/auth"));
 const message_1 = __importDefault(require("./routes/message"));
+const user_1 = __importDefault(require("./routes/user"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 app.use(express_1.default.json());
@@ -46,6 +47,7 @@ if (process.env.MONGODB_URI) {
 }
 app.use("/auth", auth_1.default);
 app.use("/messages", message_1.default);
+app.use("/users", user_1.default);
 app.listen(3000, () => {
     console.log(`Server listning on port ${PORT}`);
 });
