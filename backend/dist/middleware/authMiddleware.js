@@ -7,7 +7,6 @@ exports.authenticateJWTToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authenticateJWTToken = (req, res, next) => {
     const accessToken = req.header("jwtToken");
-    console.log("jwt Token " + accessToken);
     if (accessToken) {
         if (!process.env.JWT_SECRET)
             return res.status(403).json({ message: "Please provide token" });
