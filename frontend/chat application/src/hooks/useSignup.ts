@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast"
+import { useAuthContext } from "../context/AuthContext";
 
 interface SignupParams {
     email: string;
@@ -10,6 +11,7 @@ interface SignupParams {
 
 const useSignup = () => {
     const [loading, setLoading] = useState(false);
+    const {setAuthUser} = useAuthContext();
 
     const signup = async({email, username, password, gender}: SignupParams) => {
         const success = handleInputErrors({email, username, password, gender})
@@ -25,12 +27,16 @@ const useSignup = () => {
             })
 
             const data = await res.json();
-            console.log(data);
+            if(data.error) {
+                throw new Error(data.error)
+            }
+            localStorage.setItem("token", JSON.stringify(data.jwtToken))
+            setAuthUser(data.jwtToken)
         } catch (e) {
             if (e instanceof Error) {
                 toast.error(e.message);
             } else {
-                toast.error("An unknown error occurred");
+                toast.error("An unknown error occurred while signing up");
             }
         } finally {
             setLoading(false)
