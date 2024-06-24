@@ -3,7 +3,7 @@ import MessageInput from "./MessageInput";
 import Messages from "./Messages";
 
 const MessageContainer = () => {
-    const noChatSelected = false;
+    const noChatSelected = true;
     return(
         <>
         {noChatSelected ? (<NoChatSelected/>) : (
