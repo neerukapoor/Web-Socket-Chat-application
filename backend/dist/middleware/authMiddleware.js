@@ -7,12 +7,13 @@ exports.authenticateJWTToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authenticateJWTToken = (req, res, next) => {
     const accessToken = req.header("jwtToken");
+    console.log("access token " + accessToken);
     if (accessToken) {
         if (!process.env.JWT_SECRET)
             return res.status(403).json({ message: "Please provide token" });
         jsonwebtoken_1.default.verify(accessToken, process.env.JWT_SECRET, (err, data) => {
             if (err) {
-                return res.status(403).json({ message: "Got Authentication Error" });
+                return res.status(403).json({ message: "Got Authentication Error " + err });
             }
             if (!data) {
                 return res.status(403).json({ message: "Got Authentication Error, data is undefined" });

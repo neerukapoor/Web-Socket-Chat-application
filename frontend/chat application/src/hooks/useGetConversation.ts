@@ -21,22 +21,22 @@ const useGetConversation = () => {
 
 
     useEffect(() => {
+        console.log("neeru..." + authUser)
         const getConversations = async () => {
             setLoading(true)
-            console.log("abe oo " + authUser)
             try {
                 const res = await fetch("http://localhost:3000/users", {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
-                        "jwtToken": authUser
+                        "Content-type": "application/json",
+                        // "jwtToken": authUser
                     }
                 }) 
+                console.log("yaha " + authUser) 
                 const data = await res.json();
                 if(data.error) {
                     throw new Error(data.error)
                 }
-                console.log("skadhfkadfkhsfd " + data[0].profilePic) // ye to working hai bhyii
                 setConversations(data)
             } catch(e) {
                 if(e instanceof Error) {
