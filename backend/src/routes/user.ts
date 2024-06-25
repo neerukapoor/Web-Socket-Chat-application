@@ -4,5 +4,6 @@ import userRouter from '../controllers/user'
 import { authenticateJWTToken } from '../middleware/authMiddleware';
 
 route.get("/", userRouter.getUsersForSideBar)
+route.get("/loggedInuser", authenticateJWTToken, userRouter.getCurrentUser)
 
 export default route;

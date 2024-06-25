@@ -11,6 +11,17 @@ const getUsersForSideBar = async (req : Request, res : Response) => {
     }
 }
 
+const getCurrentUser = async (req : Request, res : Response) => {
+    try {
+        const user = req.headers["id"]
+        const loggedInUser = await User.find({_id: user}).select("-password")
+        res.status(200).json(loggedInUser)
+    } catch (e) {
+        res.status(500).json({error: `Error in fetching user details ${e}`})
+    }
+}
+
 export default {
-    getUsersForSideBar
+    getUsersForSideBar,
+    getCurrentUser
 }

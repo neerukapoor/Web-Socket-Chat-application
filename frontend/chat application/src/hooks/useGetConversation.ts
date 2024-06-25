@@ -21,7 +21,6 @@ const useGetConversation = () => {
 
 
     useEffect(() => {
-        console.log("neeru..." + authUser)
         const getConversations = async () => {
             setLoading(true)
             try {
@@ -32,7 +31,6 @@ const useGetConversation = () => {
                         // "jwtToken": authUser
                     }
                 }) 
-                console.log("yaha " + authUser) 
                 const data = await res.json();
                 if(data.error) {
                     throw new Error(data.error)

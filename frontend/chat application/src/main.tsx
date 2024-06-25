@@ -5,15 +5,18 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthContextProvider } from './context/AuthContext.tsx'
 import { ConversationContextProvider } from './context/ConversationContext.tsx'
+import { UserContextProvider } from './context/UserContext.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ConversationContextProvider>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
-      </ConversationContextProvider>
+      <UserContextProvider>
+        <ConversationContextProvider>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+        </ConversationContextProvider>
+      </UserContextProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )

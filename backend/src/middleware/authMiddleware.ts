@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 
 export const authenticateJWTToken = (req : Request, res : Response, next: NextFunction) => {
     const accessToken = req.header("jwtToken");
-    console.log("access token " + accessToken)
     if(accessToken) {
         if(!process.env.JWT_SECRET)
             return res.status(403).json({message: "Please provide token"})
