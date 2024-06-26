@@ -7,9 +7,9 @@ const Home = () => {
     console.log("loggeddd " + loggedInUser)
     return (
         <div className=''>
-            <div className='flex justify-end'>
+            {/* <div className='flex justify-end'>
                 {loggedInUser}
-            </div>
+            </div> */}
             <div className="flex justify-center items-center bg-slate-100 p-6 rounded-xl shadow-lg">
                 <Sidebar/>
                 <MessageContainer/>
