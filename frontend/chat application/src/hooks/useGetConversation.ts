@@ -28,7 +28,7 @@ const useGetConversation = () => {
                     method: "GET",
                     headers: {
                         "Content-type": "application/json",
-                        // "jwtToken": authUser
+                        "jwtToken": JSON.parse(authUser)
                     }
                 }) 
                 const data = await res.json();

@@ -35,6 +35,7 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const message_1 = __importDefault(require("./routes/message"));
 const user_1 = __importDefault(require("./routes/user"));
 const dotenv = __importStar(require("dotenv"));
+const path_1 = __importDefault(require("path"));
 dotenv.config();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
@@ -48,6 +49,9 @@ if (process.env.MONGODB_URI) {
 app.use("/auth", auth_1.default);
 app.use("/messages", message_1.default);
 app.use("/users", user_1.default);
+app.get("/", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "index.html"));
+});
 app.listen(3000, () => {
     console.log(`Server listning on port ${PORT}`);
 });

@@ -7,6 +7,7 @@ import authRouter from './routes/auth';
 import messageRouter from './routes/message'
 import userRouter from './routes/user'
 import * as dotenv from 'dotenv';
+import path from 'path';
 dotenv.config();
 app.use(express.json());
 app.use(cors());
@@ -22,6 +23,11 @@ if(process.env.MONGODB_URI) {
 app.use("/auth", authRouter);
 app.use("/messages", messageRouter);
 app.use("/users", userRouter)
+
+app.get("/", (req,res) => {
+	res.sendFile(path.join(__dirname, "index.html"));
+})
+
 
 app.listen(3000, () => {
     console.log(`Server listning on port ${PORT}`)

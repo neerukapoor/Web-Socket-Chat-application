@@ -17,6 +17,9 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const message = req.body.message;
         const receiverId = req.params.id;
         const senderId = req.headers["id"];
+        console.log("neeru in backend m " + message);
+        console.log("neeru in backend ri " + receiverId);
+        console.log("neeru in backend si " + senderId);
         let conversation = yield conversation_1.Conversation.findOne({
             participants: { $all: [senderId, receiverId] }
         });
