@@ -22,7 +22,7 @@ const useGetLoggedInUser = () => {
                 if(data.error) {
                     throw new Error(data.error)
                 }
-                console.log("logged in vala " + data[0].username)
+                console.log("logged in vala " + data[0]._id)
                 setLoggedInUser(data[0].username)
             } catch (e) {
 

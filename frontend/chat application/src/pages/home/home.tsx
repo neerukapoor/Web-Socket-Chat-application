@@ -4,7 +4,6 @@ import useGetLoggedInUser from '../../hooks/useGetLoggedInUser';
 
 const Home = () => {
     const {loading, loggedInUser} = useGetLoggedInUser();
-    console.log("loggeddd " + loggedInUser)
     return (
         <div className=''>
             <div className='flex justify-end text-lg'>

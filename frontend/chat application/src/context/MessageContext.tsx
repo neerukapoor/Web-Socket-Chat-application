@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useState } from "react"
 
 interface MessagesContextType {
-    messages: any
-    setMessages: (message:any) => void
+    messages: any[]
+    setMessages: (message:any[]) => void
 }
 
 interface MessagesContextProviderProps {
@@ -21,6 +21,6 @@ export const useMessageContext = () => {
 }
 
 export const MessagesContextProvider = ({children} : MessagesContextProviderProps) => {
-    const [messages, setMessages] = useState<MessagesContextType[]>();
+    const [messages, setMessages] = useState<any[]>([]);
     return <MessagesContext.Provider value={{messages, setMessages}}>{children}</MessagesContext.Provider>
 }

@@ -25,7 +25,7 @@ export const useGetMessages = () => {
                 if(data.error) {
                     throw new Error(data.error)
                 }
-                console.log("mai idhar " + data[0].message)
+                console.log("neeru to get data details- " + data[0].senderId)
                 setMessages(data)
             } catch (e) {
                 if(e instanceof Error) {
@@ -39,7 +39,7 @@ export const useGetMessages = () => {
         }
         if(selectedUser?._id)
             getMessages()
-    }, [selectedUser?._id])
+    }, [selectedUser?._id, setMessages])
 
     return {loading, messages}
 }
